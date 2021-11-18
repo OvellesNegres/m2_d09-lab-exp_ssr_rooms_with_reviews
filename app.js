@@ -21,9 +21,12 @@ app.set('view engine', 'hbs');
 app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
-  saveUninitialized: false,
+  saveUninitialized: true,
   cookie: {maxAge: 24 * 60 * 60 * 1000},
-  store: MongoStore.create({mongoUrl: process.env.MONGODB_URI})
+  store: MongoStore.create({
+    mongoUrl: process.env.MONGODB_URI,
+    ttl: 24 * 60 * 60
+  })
 }))
 
 app.use(logger('dev'));
