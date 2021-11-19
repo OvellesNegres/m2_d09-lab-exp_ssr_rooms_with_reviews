@@ -3,11 +3,14 @@ const router = express.Router();
 const bcrypt = require("bcrypt")
 const User = require("../models/User.model")
 
+const isNotLoggedIn = require('./../middleware/isNotLoggedIn')
+const isLoggedIn = require('./../middleware/isLoggedIn')
+
 router.route('/signup')
-  .get((req, res) => {
-    res.render('signup-form');
+  .get(isNotLoggedIn, (req, res) => {
+    res.render('users/signup-form');
   })
-  .post(async (req, res) => {
+  .post(isNotLoggedIn, async (req, res) => {
     const { username, email, password } = req.body
     try {
       if ( !username || !password || !email || !email.includes('@')) throw Error({ type: "CRED_ERR", msg: "Missing credentials" })
@@ -28,8 +31,8 @@ router.route('/signup')
   })
 
 router.route("/login")
-  .get((req, res) => { res.render("login-form") })
-  .post(async (req, res) => {
+  .get(isNotLoggedIn, (req, res) => { res.render("login-form") })
+  .post(isNotLoggedIn, async (req, res) => {
     const { email, password } = req.body
     try {
       if (!email || !password) throw Error({ type: "CRED_ERR", msg: "Missing credentials" })
@@ -47,7 +50,7 @@ router.route("/login")
     }
   })
 
-router.get('/logout', (req, res) => {
+router.get('/logout', isLoggedIn, (req, res) => {
   req.session.destroy((err) => {
     if (err) res.redirect('/');
     else res.redirect('/users/login');

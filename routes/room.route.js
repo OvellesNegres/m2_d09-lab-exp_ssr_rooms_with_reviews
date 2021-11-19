@@ -4,6 +4,8 @@ var router = express.Router();
 const User = require("../models/User.model")
 const Room = require("../models/Room.model")
 
+const isLoggedIn = require('./../middleware/isLoggedIn')
+
 router.get('/', async (req, res) => {
     try {
         listRooms = await Room.find()
@@ -15,11 +17,11 @@ router.get('/', async (req, res) => {
 });
 
 router.route("/new")
-    .get(async (req, res) => {
+    .get(isLoggedIn, async (req, res) => {
         const users = await User.find()
         res.render("rooms/new-room", { users })
     })
-    .post(async (req, res) => {
+    .post(isLoggedIn, async (req, res) => {
         const { name, description, owner } = req.body
         console.log("req.body: ", req.body)
         try {
